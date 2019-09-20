@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <script src="./jquery.js"></script> -->
+    <link href="./chatbox.css" rel="stylesheet" type="text/css"/>
+    
+    <script src="./chatbox.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    ChatBox
+    <input type="text" id="chatBy"  />
+    <div id="chatBox"></div>
+    <script>
+ 
+        let options = {
+            list_container: '#chatBox',
+            list_button_text: 'Message',
+            // current_user : {
+            //     id : 'current-user-1'
+            // },
+            socket_url: 'http://192.168.1.37:3000/',
+            emoji: true,
+            rooms : [
+                {
+                    id : 'room-1',
+                    person: {
+                        id : 'person-1',
+                        name : 'Person 1',
+                        photo : 'charachter/F_1.png',
+                        
+                    }
+                },
+                {
+                    id : 'room-2',
+                    person: {
+                        id : 'person-2',
+                        name : 'Person 2',
+                        photo : ''
+                    }
+                },
+                {
+                    id : 'room-3',
+                    person: {
+                        id : 'person-3',
+                        name : 'Person 3',
+                        photo : 'charachter/M_6.png'
+                    }
+                }
+            ]
+        }
+        const chatBox = new ChatBox(options);
+        chatBox.generateChatRoomList();
+    </script>
+</body>
+</html>
