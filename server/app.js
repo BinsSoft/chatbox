@@ -92,6 +92,10 @@ app.get("/chat-history/:room/:page", (req, res) => {
     offset: offset,
     limit: 10
   }).then((chatData) => {
+    ChatHistory.update(
+      { status: '1' }, /* set attributes' value */
+      { where: { room: req.params.room }} /* where criteria */
+    );
     res.json({
       data: chatData.rows,
       total : chatData.count
