@@ -6987,11 +6987,13 @@ class ChatBox {
         }
         this.socket = null;
         this.socketUrl = null;
+        this.socketHost = null;
         if (config.socket_url) {
            this.socketUrl = config.socket_url;
+           this.socketHost = new URL(config.socket_url).origin+'/';
         }
         this.addScript("https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js", () => {
-            this.socket = io(config.socket_url, {
+            this.socket = io(this.socketHost, {
                 transports: ['websocket']
             });
             this.socket.on("receive", (data) => {
