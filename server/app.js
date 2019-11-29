@@ -1,9 +1,31 @@
+/*!
+ * **************************************************
+ * Name : Chatbox                                   *
+ * Description : A chat library                     *
+ * Author: Tonmoy Nandy                             *
+ * Date: 2019-09-17                                 *
+ * **************************************************
+ */
 var app = require('express')();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+require('dotenv').config();
+
+if (process.env.PRODUCTION == 'true') {
+  const fs = require('fs');
+  var options = {
+    key: fs.readFileSync(process.env.SSLKEY),
+    cert: fs.readFileSync(process.env.SSLPEM),
+    requestCert: true,
+    rejectUnauthorized: false
+  };
+  var server = require('https').createServer(options, app);
+} else {
+  var server = require('http').createServer(app);
+}
+var io = require('socket.io')(server);
+
 var Sequelize = require('sequelize');
-const sequelize = new Sequelize('laravel57_expertgully', 'root', 'matrix', {
-  host: '192.168.1.179',
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
   dialect: 'mysql',
   logging: false,
   pool: {
@@ -49,8 +71,8 @@ io.on('connection', function (socket) {
     if (io.sockets.adapter.rooms[data.room.id]) {
       clientsNo = io.sockets.adapter.rooms[data.room.id].length;
     }
-    
-    if(clientsNo==0 || clientsNo<=2) {
+
+    if (clientsNo == 0 || clientsNo <= 2) {
       socket.join(data.room.id);
       if (clientsNo != 2) {
         data['client_no'] = clientsNo;
@@ -77,7 +99,9 @@ io.on('connection', function (socket) {
     io.sockets.in(data.room.id).emit("receive", data);
   });
 });
-
+app.get("/", function(req, res) {
+  res.json({status:1,msg:'home'});
+});
 app.get("/chat-history/:room/:page", (req, res) => {
   let limit = 10;
   let offset = (req.params.page) ? (Number(req.params.page) - 1) * limit : 0;
@@ -87,22 +111,32 @@ app.get("/chat-history/:room/:page", (req, res) => {
     },
     order: [
       ['posted_on', 'DESC'],
-    
+
     ],
     offset: offset,
     limit: 10
   }).then((chatData) => {
-    ChatHistory.update(
-      { status: '1' }, /* set attributes' value */
-      { where: { room: req.params.room }} /* where criteria */
-    );
+    ChatHistory.update({
+      status: '1'
+    }, /* set attributes' value */ {
+      where: {
+        room: req.params.room
+      }
+    } /* where criteria */ );
     res.json({
       data: chatData.rows,
-      total : chatData.count
+      total: chatData.count
     });
   });
 });
 
-http.listen(5030, function () {
-  console.log('listening on *:5030');
+const port = process.env.PORT;
+server.listen(port, function (e) {
+  
+  console.log('\x1b[31m', '*********************************');
+  console.log('\x1b[31m', '*                               *');
+  console.log('\x1b[32m', '* 🚀 Server ready               *');
+  console.log('\x1b[33m%s\x1b[0m', ' * Listening on  :'+port+'           *');
+  console.log('\x1b[31m', '*                               *');
+  console.log('\x1b[31m', '*********************************');
 });

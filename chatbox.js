@@ -1,9 +1,10 @@
 /*!
- * Bins Chatbox
- * A chat library
- * Copyright BinsSoft
- * Released under the MIT license
- * Date: 2019-09-17
+ * **************************************************
+ * Name : Chatbox                                   *
+ * Description : A chat library                     *
+ * Author: Tonmoy Nandy                             *
+ * Date: 2019-09-17                                 *
+ * **************************************************
  */
 class ChatBox {
     constructor(config) {
